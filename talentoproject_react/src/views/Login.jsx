@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../context/contextprovider";
+import Footer from "../components/Footer";
 
 export default function Login() {
     const emailRef = useRef();
@@ -12,7 +13,7 @@ export default function Login() {
 
     const handleSubmit = (ev) => {
         ev.preventDefault();
-        
+
         const payload = {
             email: emailRef.current.value,
             password: passwordRef.current.value,
@@ -23,14 +24,13 @@ export default function Login() {
                 setUser(data.user);
                 setToken(data.token);
                 console.log("Login success");
-                
-                
+
                 if (data.user.role === 'admin') {
-                    navigate('/admin');
-                } else if (data.user.role === 'customer') {
+                    navigate('/dashboard');
+                } else if (data.user.role === 'client') {
                     navigate('/customer');
                 } else if (data.user.role === 'performer') {
-                    navigate('/performer');
+                    navigate('/portfolio');
                 }
             })
             .catch(err => {
@@ -45,29 +45,21 @@ export default function Login() {
 
     return (
         <>
-            <div>
-                <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-                    <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                            Login
-                        </h2>
-                    </div>
-
-                    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                        <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                <div className="w-full max-w-md space-y-8">
+                    <div className="bg-white py-8 px-6 shadow rounded-lg">
+                        <h2 className="text-center text-3xl font-extrabold text-gray-900">Welcome Back!</h2>
+                        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                             {error && (
                                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                                     <span className="block sm:inline">{error}</span>
                                 </div>
                             )}
                             <div>
-                                <label
-                                    htmlFor="email"
-                                    className="block text-sm font-medium leading-6 text-gray-900"
-                                >
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                     Email address
                                 </label>
-                                <div className="mt-2">
+                                <div className="mt-1">
                                     <input
                                         ref={emailRef}
                                         id="email"
@@ -75,21 +67,17 @@ export default function Login() {
                                         type="email"
                                         autoComplete="email"
                                         required
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                        placeholder="Email address"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <div className="flex items-center justify-between">
-                                    <label
-                                        htmlFor="password"
-                                        className="block text-sm font-medium leading-6 text-gray-900"
-                                    >
-                                        Password
-                                    </label>
-                                </div>
-                                <div className="mt-2">
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                    Password
+                                </label>
+                                <div className="mt-1">
                                     <input
                                         ref={passwordRef}
                                         id="password"
@@ -97,41 +85,50 @@ export default function Login() {
                                         type="password"
                                         autoComplete="current-password"
                                         required
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                        placeholder="Password"
                                     />
                                 </div>
+                                <div className="text-sm text-right mt-2">
+                                    <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                        Forgot Password?
+                                    </a>
+                                </div>
                             </div>
-                            <div className="text-sm">
-                                <a
-                                    href="#"
-                                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                                >
-                                    Forgot password?
-                                </a>
+
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <input
+                                        id="remember_me"
+                                        name="remember_me"
+                                        type="checkbox"
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    />
+                                    <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-900">
+                                        Remember me
+                                    </label>
+                                </div>
                             </div>
 
                             <div>
                                 <button
                                     type="submit"
-                                    className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    Sign in
+                                    Log In
                                 </button>
                             </div>
                         </form>
-
-                        <p className="mt-10 text-center text-sm text-gray-500">
-                            Don't have an account?{" "}
-                            <Link
-                                to="/register"
-                                className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-                            >
-                                Register
+                        <p className="mt-6 text-center text-sm text-gray-600">
+                            Don’t have an account?{" "}
+                            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                Sign up now
                             </Link>
                         </p>
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 }

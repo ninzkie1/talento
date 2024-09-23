@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
@@ -31,14 +30,14 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
-          
             $validatedData = $request->validated();
 
             $user = User::create([
                 'name' => $validatedData['name'],
+                'lastname' => $validatedData['lastname'],
                 'email' => $validatedData['email'],
                 'password' => bcrypt($validatedData['password']),
-                'role' => $validatedData['role'], // Include role in user creation
+                'role' => $validatedData['role'], 
             ]);
 
             $token = $user->createToken('main')->plainTextToken;

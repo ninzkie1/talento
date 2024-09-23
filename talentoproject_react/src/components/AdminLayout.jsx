@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import Logo from "../assets/logotalentos.png";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -6,150 +7,128 @@ import {
   List,
   ListItem,
   ListItemPrefix,
-  Accordion,
-  AccordionHeader,
-  AccordionBody,
 } from "@material-tailwind/react";
 import {
   PresentationChartBarIcon,
-  ShoppingBagIcon,
+  BriefcaseIcon,
+  ChartBarIcon,
   UserCircleIcon,
   PowerIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/solid";
-import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useStateContext } from "../context/contextprovider";
 
 export default function AdminLayout() {
-  const { user, token, setToken } = useStateContext();
-  const [open, setOpen] = React.useState(0);
-  const navigate = useNavigate(); // Hook for programmatic navigation
+  const { user, token, setToken, setUser} = useStateContext();
+  const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const handleOpen = (value) => {
-    setOpen(open === value ? 0 : value);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const onLogout = (ev) => {
     ev.preventDefault();
     setToken(null);
-  };
-
-  const navigateToUsers = () => {
-    // Programmatic navigation to /users
-    navigate("/users");
+    setUser(null);
+    localStorage.removeItem('USER_DATA');
   };
 
   const navigateToReports = () => {
-    // Programmatic navigation to /reports
     navigate("/reports");
   };
 
+  const navigateToBookings = () => {
+    navigate("/booking");
+  };
+  const navigateToPerformer = () => {
+    navigate("/Performers");
+  };
+
+  const navigateToUsers = () => {
+    navigate("/users");
+  };
+
   if (!token) {
-    return <Navigate to='login' />;
+    return <Navigate to="/login" />;
   }
 
   return (
-    <div className="flex min-h-full">
-      <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 bg-gray-200">
-        <div className="mb-2 p-4">
-          <Typography variant="h5" color="blue-gray">
-            Sidebar
-          </Typography>
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <Card
+        className={`h-screen w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 bg-gray-600 fixed transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-[calc(100%-2rem)]"
+        }`}
+      >
+        {/* Toggle button */}
+        <button
+          className="absolute top-1/2 -right-4 bg-gray-600 p-2 rounded-r-md text-white transform -translate-y-1/2"
+          onClick={toggleSidebar}
+        >
+          {isSidebarOpen ? (
+            <ChevronLeftIcon className="h-5 w-5" />
+          ) : (
+            <ChevronRightIcon className="h-5 w-5" />
+          )}
+        </button>
+
+        <div className="flex items-center mb-2 p-3">
+          <img src={Logo} alt="Talento Logo" className="h-20 w-auto mr-2" />
+          <h1 className="text-xl font-bold tracking-tight text-white">
+            Welcome {user ? user.role : ""} {user ? user.name : "Guest"}!
+          </h1>
         </div>
         <List>
-          <Accordion
-            open={open === 1}
-            icon={
-              <ChevronDownIcon
-                strokeWidth={2.5}
-                className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}
-              />
-            }
+         
+
+          <ListItem
+            className="p-3 hover:bg-gray-800"
+            onClick={navigateToReports}
           >
-            <ListItem className="p-0" selected={open === 1}>
-              <AccordionHeader onClick={() => handleOpen(1)} className={`border-b-0 p-3 ${open === 1 ? 'bg-black text-white' : 'hover:bg-gray-300'}`}>
-                <ListItemPrefix>
-                  <PresentationChartBarIcon className="h-5 w-5" />
-                </ListItemPrefix>
-                <Typography color="blue-gray" className="mr-auto font-normal">
-                  Dashboard
-                </Typography>
-              </AccordionHeader>
-            </ListItem>
-            {open === 1 && (
-              <AccordionBody className="py-1">
-                <List className="p-0">
-                  <ListItem onClick={navigateToReports}>
-                    <ListItemPrefix>
-                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Reporting
-                  </ListItem>
-                </List>
-              </AccordionBody>
-            )}
-          </Accordion>
-          <Accordion
-            open={open === 2}
-            icon={
-              <ChevronDownIcon
-                strokeWidth={2.5}
-                className={`mx-auto h-4 w-4 transition-transform ${open === 2 ? "rotate-180" : ""}`}
-              />
-            }
-          >
-            <ListItem className="p-0" selected={open === 2}>
-              <AccordionHeader onClick={() => handleOpen(2)} className={`border-b-0 p-3 ${open === 2 ? 'bg-black text-white' : 'hover:bg-gray-300'}`}>
-                <ListItemPrefix>
-                  <ShoppingBagIcon className="h-5 w-5" />
-                </ListItemPrefix>
-                <Typography color="blue-gray" className="mr-auto font-normal">
-                  Bookings
-                </Typography>
-              </AccordionHeader>
-            </ListItem>
-            {open === 2 && (
-              <AccordionBody className="py-1">
-                <List className="p-0">
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Orders
-                  </ListItem>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Products
-                  </ListItem>
-                </List>
-              </AccordionBody>
-            )}
-          </Accordion>
-          <ListItem className={`p-3 ${open === 3 ? 'bg-black text-white' : 'hover:bg-gray-300'}`} onClick={navigateToUsers}>
             <ListItemPrefix>
-              <UserCircleIcon className="h-5 w-5" />
+              <ChartBarIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>
-            Users
+            <Typography color="white">Reporting</Typography>
           </ListItem>
-          <ListItem onClick={onLogout} className="hover:bg-gray-300">
+
+          <ListItem
+            className="p-3 hover:bg-gray-800"
+            onClick={navigateToBookings}
+          >
             <ListItemPrefix>
-              <PowerIcon className="h-5 w-5" />
+              <BriefcaseIcon className="h-5 w-5 text-white" />
             </ListItemPrefix>
-            Log Out
+            <Typography color="white">Bookings</Typography>
+          </ListItem>
+
+          <ListItem className="p-3 hover:bg-gray-800" onClick={navigateToPerformer}>
+            <ListItemPrefix>
+              <UserCircleIcon className="h-5 w-5 text-white" />
+            </ListItemPrefix>
+            <Typography color="white">Manage Complains/Feedback</Typography>
+          </ListItem>
+
+          <ListItem className="p-3 hover:bg-gray-800" onClick={navigateToUsers}>
+            <ListItemPrefix>
+              <UserCircleIcon className="h-5 w-5 text-white" />
+            </ListItemPrefix>
+            <Typography color="white">Users</Typography>
+          </ListItem>
+
+          <ListItem onClick={onLogout} className="p-3 hover:bg-gray-800">
+            <ListItemPrefix>
+              <PowerIcon className="h-5 w-5 text-white" />
+            </ListItemPrefix>
+            <Typography color="white">Log Out</Typography>
           </ListItem>
         </List>
       </Card>
-      <div className="flex-1">
-        <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-          </div>
-        </header>
-        <main>
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{/* Your content */}</div>
-        </main>
-        <Outlet />
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col">
+        <Outlet context={{ isSidebarOpen }} />
       </div>
     </div>
   );

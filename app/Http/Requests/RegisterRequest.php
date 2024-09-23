@@ -24,17 +24,17 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => [
                 'required',
-                'confirmed', // Ensures the password_confirmation field matches
                 Password::min(8)
                     ->letters()
                     ->mixedCase()
                     ->numbers()
                     ->symbols(),
             ],
-            'role' => 'required|string|in:customer,performer,admin', // Adjust as per your role types
+            'role' => 'required|string|in:client,performer,admin', 
         ];
     }
 
@@ -47,11 +47,11 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name.required' => 'A name is required',
+            'lastname.required' => 'A lastname is required',
             'email.required' => 'An email address is required',
             'email.email' => 'A valid email address is required',
             'email.unique' => 'This email address is already registered',
             'password.required' => 'A password is required',
-            'password.confirmed' => 'Password confirmation does not match',
             'role.required' => 'A role is required',
             'role.in' => 'The role must be either customer or performer',
         ];
